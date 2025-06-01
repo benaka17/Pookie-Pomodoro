@@ -1,0 +1,29 @@
+Starting Page:
+
+        Greet pookie with a cute message
+        Then have a selection of 25/5, 30/10 and 45/15 in the form of nice buttons in a row
+        After a button gets selected then redirect to a new page with the timer
+
+        Buttons can/should have different looks or colors
+    
+    
+Main Page:
+
+        After the timer gets selected it switches to the new page and starts the timer after a few seconds (short delay)
+        The page should look aesthetic so...
+
+            Left side: Cool image, with the theme of the button from the previous page
+            Right side:
+                Top: "Do Not Disturb" or just some saying -> Make that curved
+                Bottom: Big Countdown, Minutes number and below it says minutes, seconds number and below it says seconds
+
+        When the timer is done there should be a ring sound "bingggg" and the page inverts...
+
+            Right side: Cool image but a new one, with the theme of the button from the previous page
+            Left side:
+                Top: "Take a break!" or just some saying -> Make that curved
+                Bottom: Big Countdown, Minutes number and below it says minutes, seconds number and below it says seconds
+
+        The entire time there should be lofi music playing
+        
+        And from time to time there should be motivation on the screen
