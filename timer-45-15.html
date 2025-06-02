@@ -19,9 +19,9 @@
     <!-- Work Screen -->
     <div id="work-screen" class="h-screen flex flex-col md:flex-row justify-evenly items-center p-4 text-center gap-6">
       <img class="w-72 sm:w-80 md:w-96 max-w-full h-auto" src="hibiscus1.png" alt="Matcha">
-      <div class="w-full md:w-1/2 text-center">
+      <div class="w-full md:w-1/2 text-center cursor-pointer">
         <h2 class="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6 tracking-widest">DO NOT DISTURB</h2>
-        <div class="flex justify-center gap-4 text-9xl font-bold">
+        <div class="flex justify-center gap-4 text-9xl font-bold cursor-pointer">
           <span id="work-minutes">45</span>:<span id="work-seconds">00</span>
         </div>
         <div class="text-sm mt-2">
@@ -32,9 +32,9 @@
 
     <!-- Break Screen -->
     <div id="break-screen" class="h-screen hidden flex-col md:flex-row justify-evenly items-center p-4 text-center gap-6">
-      <div class="w-full md:w-1/2 text-center">
+      <div class="w-full md:w-1/2 text-center cursor-pointer">
         <h2 class="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6 tracking-widest">TAKE A BREAK</h2>
-        <div class="flex justify-center gap-4 text-9xl font-bold">
+        <div class="flex justify-center gap-4 text-9xl font-bold cursor-pointer">
           <span id="break-minutes">15</span>:<span id="break-seconds">00</span>
         </div>
         <div class="text-sm mt-2">
@@ -77,23 +77,28 @@
   </div>
 
   <audio id="background-music"></audio>
+  <audio id="ding-sound" src="ding.mp3" preload="auto"></audio>
 
   <script>
-    // Pomodoro logic
     let workDuration = 45 * 60;
     let breakDuration = 15 * 60;
     let isWork = true;
     let intervalId;
+    let isPaused = false;
+    let remainingTime = 0;
 
     function startTimer(duration, updateFn, doneFn) {
-      let time = duration;
-      updateFn(time);
+      remainingTime = duration;
+      updateFn(remainingTime);
+      clearInterval(intervalId);
       intervalId = setInterval(() => {
-        time--;
-        updateFn(time);
-        if (time <= 0) {
-          clearInterval(intervalId);
-          doneFn();
+        if (!isPaused) {
+          remainingTime--;
+          updateFn(remainingTime);
+          if (remainingTime <= 0) {
+            clearInterval(intervalId);
+            doneFn();
+          }
         }
       }, 1000);
     }
@@ -108,11 +113,17 @@
     function switchScreens() {
       const workScreen = document.getElementById("work-screen");
       const breakScreen = document.getElementById("break-screen");
+      const dingSound = document.getElementById("ding-sound");
 
       if (isWork) {
         workScreen.classList.replace("flex", "hidden");
         breakScreen.classList.replace("hidden", "flex");
         isWork = false;
+
+        // Play the ding sound here (without interrupting bg music)
+        dingSound.currentTime = 1;  // rewind if needed
+        dingSound.play();
+
         startTimer(breakDuration, (t) => updateTimeDisplay("break", t), switchScreens);
       } else {
         breakScreen.classList.replace("flex", "hidden");
@@ -124,19 +135,15 @@
 
     startTimer(workDuration, (t) => updateTimeDisplay("work", t), switchScreens);
 
-    // Audio logic
-    // All music files are in the 'music/' folder
-    const fileNames = [
-      'lofi1.mp3', 
-      'lofi2.mp3', 
-      'lofi3.mp3',
-      'lofi4.mp3',
-      'lofi5.mp3',
-      'lofi6.mp3',
-      'lofi7.mp3',
-      'lofi8.mp3',
-      'lofi9.mp3',
-    ];
+    function togglePause() {
+      isPaused = !isPaused;
+    }
+
+    document.getElementById("work-screen").addEventListener("click", togglePause);
+    document.getElementById("break-screen").addEventListener("click", togglePause);
+
+    // Audio
+    const fileNames = ['lofi1.mp3','lofi2.mp3','lofi3.mp3','lofi4.mp3','lofi5.mp3','lofi6.mp3','lofi7.mp3','lofi8.mp3','lofi9.mp3'];
     const tracks = fileNames.map(name => `music/${name}`);
     let shuffledTracks = [...tracks];
     let currentTrackIndex = 0;
@@ -165,35 +172,19 @@
 
     bgMusic.addEventListener('ended', playNextTrack);
 
-    // UI controls
     const playBtn = document.getElementById("play-music");
     const muteBtn = document.getElementById("toggle-mute");
     const volumeSlider = document.getElementById("volume-slider");
 
-    const muteSVG = `
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
-      </svg>`;
-
-    const unmuteSVG = `
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
-      </svg>`;
+    const muteSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg>`;
+    const unmuteSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg>`;
 
     let isMuted = false;
     muteBtn.innerHTML = unmuteSVG;
 
-    let hasStartedMusic = false;
-    function startMusic() {
-      if (!hasStartedMusic) {
-        bgMusic.play();
-        hasStartedMusic = true;
-      }
-    }
-
-    playBtn.addEventListener("click", startMusic);
-    document.addEventListener("click", startMusic, { once: true });
-    document.addEventListener("keydown", startMusic, { once: true });
+    playBtn.addEventListener("click", () => {
+      bgMusic.play();
+    });
 
     muteBtn.addEventListener("click", () => {
       isMuted = !isMuted;
@@ -203,7 +194,6 @@
 
     bgMusic.volume = 0.5;
     volumeSlider.value = 0.5;
-
     volumeSlider.addEventListener("input", () => {
       bgMusic.volume = parseFloat(volumeSlider.value);
     });
