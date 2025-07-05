@@ -54,9 +54,19 @@
       </button>
       <button id="toggle-mute" type="button" class="w-28 h-10 sm:w-32 sm:h-10 text-white bg-amber-400 rounded-full shadow transition-all duration-400 hover:shadow-xl hover:shadow-amber-500/60 focus:outline-none focus:ring-2 focus:ring-amber-400 flex justify-center items-center"></button>
     </div>
+
     <div class="flex items-center gap-4 mt-2">
       <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="w-40 accent-amber-400 cursor-pointer" />
     </div>
+
+    <a href="index.html">
+      <button type="button" class="w-28 h-10 sm:w-32 sm:h-10 text-white bg-amber-400 rounded-full shadow transition-all duration-400 hover:shadow-xl hover:shadow-amber-500/60 focus:outline-none focus:ring-2 focus:ring-amber-400 flex justify-center items-center">
+        <!-- Home SVG icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+      </button>
+    </a>
   </div>
 
   <audio id="background-music"></audio>
@@ -126,7 +136,7 @@
     document.getElementById("break-screen").addEventListener("click", togglePause);
 
     // Audio
-    const fileNames = ['lofi1.mp3','lofi2.mp3','lofi3.mp3','lofi4.mp3','lofi5.mp3','lofi6.mp3','lofi7.mp3','lofi8.mp3','lofi9.mp3'];
+    const fileNames = ['lofi1.mp3','lofi2.mp3','lofi3.mp3','lofi4.mp3','lofi5.mp3','lofi6.mp3','lofi7.mp3','lofi8.mp3','lofi9.mp3', 'lofi10.mp3', 'lofi11.mp3', 'lofi12.mp3', 'lofi13.mp3', 'lofi14.mp3'];
     const tracks = fileNames.map(name => `music/${name}`);
     let shuffledTracks = [...tracks];
     let currentTrackIndex = 0;
